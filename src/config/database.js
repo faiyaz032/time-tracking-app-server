@@ -9,4 +9,5 @@ const pool = mysql.createPool({
   database: 'time_tracking_app',
 });
 
-module.exports = pool;
+//export the promise pool
+module.exports = pool.promise();
