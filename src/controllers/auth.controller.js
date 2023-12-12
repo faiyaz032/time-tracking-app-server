@@ -85,7 +85,7 @@ const login = async (req, res, next) => {
     }
 
     //sign token
-    const token = signJwt(result.id, result[0].email);
+    const token = signJwt(result[0].id, result[0].email);
 
     //send response
     res.status(200).json({
