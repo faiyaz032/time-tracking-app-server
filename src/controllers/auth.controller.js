@@ -40,10 +40,18 @@ const register = async (req, res, next) => {
     if (newUser.affectedRows > 0) {
       //sign token
       const token = signJwt(newUser.insertId);
+
+      //sign jwt cookie
+      res.cookie('AUTH_COOKIE', `Bearer ${token}`, {
+        maxAge: 86400,
+        httpOnly: true,
+        secure: true,
+      });
+
       return res.status(201).json({
         status: 'success',
         message: 'New user registered successfully',
-        data: { id: newUser.insertId, name, email, token },
+        data: { id: newUser.insertId, name, email },
       });
     }
   } catch (error) {
@@ -87,6 +95,12 @@ const login = async (req, res, next) => {
     //sign token
     const token = signJwt(result[0].id, result[0].email);
 
+    res.cookie('AUTH_COOKIE', `Bearer ${token}`, {
+      maxAge: 86400,
+      httpOnly: true,
+      secure: true,
+    });
+
     //send response
     res.status(200).json({
       status: 'success',
@@ -94,7 +108,6 @@ const login = async (req, res, next) => {
       data: {
         name: result[0].name,
         email,
-        token,
       },
     });
   } catch (error) {

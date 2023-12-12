@@ -1,7 +1,7 @@
 /**
  * This function returns last week date according to the given start week date
  * @param {string} startWeekDate
- * @returns {string}
+ * @returns {string}    
  */
 const getLastWeekDate = startWeekDate => {
   const currentDate = new Date(startWeekDate);

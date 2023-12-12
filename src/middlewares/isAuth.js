@@ -10,11 +10,12 @@ const AppError = require('../utils/AppError');
  * @param {express.NextFunction} next
  */
 const isAuth = (req, res, next) => {
-  // extract the authorization header from the request
-  const authHeader = `${req.get('Authorization')}`;
+  //check if cookie exists
+  const cookie = req.cookies.AUTH_COOKIE;
+  if (!cookie) return next(new AppError(400, 'Please attach AUTH_COOKIE'));
 
   // split the authorization header to extract the token
-  const [, token] = authHeader.split(' ');
+  const [, token] = cookie.split(' ');
 
   // check if a token is provided
   if (!token) {
