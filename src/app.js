@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const { notFoundHandler, defaultErrorHandler } = require('./middlewares/errorHandlers');
+const apiRouter = require('./routes');
 
 //Initialize the app
 const app = express();
@@ -21,6 +22,7 @@ app.get('/', (req, res) => {
 });
 
 //routes
+app.use('/api', apiRouter);
 
 //error handlers
 app.all('*', notFoundHandler);
