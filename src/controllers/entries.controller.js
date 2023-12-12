@@ -3,6 +3,8 @@
 const express = require('express');
 const AppError = require('../utils/AppError');
 const pool = require('../config/database');
+const getLastWeekDate = require('../utils/getWeekLastDate');
+const generateTimesheet = require('../utils/generateTimesheet');
 
 /**
  * This function handles all the logic to create an entry
@@ -69,6 +71,38 @@ const getEntries = async (req, res, next) => {
  * @param {express.Response} res
  * @param {express.NextFunction} next
  */
-const getWeeklyTimeSheet = async (req, res, next) => {};
+const getWeeklyTimeSheet = async (req, res, next) => {
+  const { startDate } = req.query;
+  const { id: userId } = req.user;
+
+  if (!startDate) {
+    return next(new AppError(401, 'Please provide startDate in the query'));
+  }
+
+  const weekLastDate = getLastWeekDate(startDate);
+
+  try {
+    const db = await pool.getConnection();
+
+    const [entries] = await db.query(
+      `SELECT * FROM entries WHERE date BETWEEN ? AND ? AND userId = ?`,
+      [startDate, weekLastDate, userId]
+    );
+
+    if (entries.length > 0) {
+      const timesheet = generateTimesheet(entries);
+      return res.status(200).json({
+        status: 'success',
+        message: 'Weekly timesheet fetched successfully',
+        data: timesheet,
+      });
+    }
+
+    return next(new AppError(404, 'No entries found'));
+  } catch (error) {
+    console.log(error);
+    next(new AppError(500, error.message));
+  }
+};
 
 module.exports = { createEntry, getEntries, getWeeklyTimeSheet };
