@@ -20,14 +20,15 @@ async function runMigration() {
 
     // query to create 'entries' table
     const createEntriesTableQuery = `
-     CREATE TABLE IF NOT EXISTS entries (
-       id INT AUTO_INCREMENT PRIMARY KEY,
-       userId INT,
-       startTime DATETIME NOT NULL,
-       endTime DATETIME,
-       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-       FOREIGN KEY (userId) REFERENCES users(id)
-     );
+    CREATE TABLE IF NOT EXISTS entries (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      userId INT,
+      date DATE NOT NULL,
+      startTime TIME NOT NULL,
+      endTime TIME NOT NULL,
+      note TEXT,
+      FOREIGN KEY (userId) REFERENCES users(id)
+    );
    `;
 
     // run the queries
