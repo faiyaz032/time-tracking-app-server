@@ -43,7 +43,25 @@ const createEntry = async (req, res, next) => {
  * @param {express.Response} res
  * @param {express.NextFunction} next
  */
-const getEntries = async (req, res, next) => {};
+const getEntries = async (req, res, next) => {
+  const { id: userId } = req.user;
+
+  try {
+    const db = await pool.getConnection();
+
+    const [result] = await db.query('SELECT * from entries WHERE userId = ?', [userId]);
+    console.log('🚀 ~ file: entries.controller.js:53 ~ getEntries ~ result:', result);
+
+    res.status(200).json({
+      status: 'success',
+      message: 'All entries fetched successfully',
+      data: result,
+    });
+  } catch (error) {
+    console.log(error);
+    next(new AppError(500, error.message));
+  }
+};
 
 /**
  * This function handles all the logic to get weekly timesheet data of an user

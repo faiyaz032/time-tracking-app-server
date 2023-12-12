@@ -6,5 +6,6 @@ const entriesController = require('../controllers/entries.controller');
 const entriesRouter = express.Router();
 
 entriesRouter.post('/', isAuth, checkEntryInput, entriesController.createEntry);
+entriesRouter.get('/', isAuth, entriesController.getEntries);
 
 module.exports = entriesRouter;
