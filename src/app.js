@@ -5,7 +5,6 @@ const cors = require('cors');
 const morgan = require('morgan');
 const { notFoundHandler, defaultErrorHandler } = require('./middlewares/errorHandlers');
 const apiRouter = require('./routes');
-const isAuth = require('./middlewares/isAuth');
 
 //Initialize the app
 const app = express();

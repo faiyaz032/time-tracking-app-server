@@ -11,13 +11,14 @@ const AppError = require('../utils/AppError');
 
 const checkEntryInput = async (req, res, next) => {
   const { date, startTime, endTime } = req.body;
+  console.log('🚀 ~ file: checkEntryInput.js:14 ~ checkEntryInput ~  req.body:', req.body);
 
   if (!date || !startTime || !endTime) {
     return next(new AppError(400, 'Please provide all the required fields'));
   }
 
   const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-  const timeRegex = /^(?:2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$/;
+  const timeRegex = /^(?:2[0-3]|[01][0-9]):[0-5][0-9]$/;
 
   if (!dateRegex.test(date)) {
     return next(new AppError(400, 'Please provide a valid date'));

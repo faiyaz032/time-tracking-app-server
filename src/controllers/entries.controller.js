@@ -1,6 +1,8 @@
+// @ts-nocheck
 //dependencies
 const express = require('express');
 const AppError = require('../utils/AppError');
+const pool = require('../config/database');
 
 /**
  * This function handles all the logic to create an entry
@@ -8,7 +10,32 @@ const AppError = require('../utils/AppError');
  * @param {express.Response} res
  * @param {express.NextFunction} next
  */
-const createEntry = async (req, res, next) => {};
+const createEntry = async (req, res, next) => {
+  const { date, startTime, endTime, note } = req.body;
+  const { id: userId } = req.user;
+
+  try {
+    //get db connection
+    const db = await pool.getConnection();
+
+    //create entry
+    const [result] = await db.query(
+      `INSERT INTO entries (userId, date, startTime, endTime, note) VALUES (?, ?, ?, ?, ?)`,
+      [userId, date, startTime, endTime, note]
+    );
+
+    if (result.affectedRows > 0) {
+      res.status(201).json({
+        status: 'success',
+        message: 'Entry created successfully',
+        data: { ...req.body },
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    next(new AppError(500, error.message));
+  }
+};
 
 /**
  * This function handles all the logic to get all entries of an user

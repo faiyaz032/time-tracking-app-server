@@ -24,7 +24,6 @@ const isAuth = (req, res, next) => {
   try {
     // verify and decode the JWT token using the JWT_SECRET_KEY
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    console.log('🚀 ~ file: isAuth.js:27 ~ isAuth ~ decoded:', decoded);
 
     // check if the token is valid and contains decoded information
     if (!decoded) {
