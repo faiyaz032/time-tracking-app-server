@@ -32,8 +32,10 @@ const isAuthenticated = async (req, res, next) => {
 const register = async (req, res, next) => {
   const { name, email, password } = req.body;
 
+  let db;
+
   try {
-    const db = await pool.getConnection();
+    db = await pool.getConnection();
 
     //fetch user with given email
     const [result] = await db.query(`SELECT * FROM users WHERE email = ?`, [email]);
@@ -73,6 +75,8 @@ const register = async (req, res, next) => {
   } catch (error) {
     console.log(error);
     next(new AppError(500, error.message));
+  } finally {
+    db.release();
   }
 };
 
@@ -89,8 +93,10 @@ const login = async (req, res, next) => {
     return next(new AppError(401, 'Please provide email and password to log in'));
   }
 
+  let db;
+
   try {
-    const db = await pool.getConnection();
+    db = await pool.getConnection();
 
     //fetch user with given email
     const [result] = await db.query(`SELECT * FROM users WHERE email = ?`, [email]);
@@ -128,6 +134,8 @@ const login = async (req, res, next) => {
   } catch (error) {
     console.log(error);
     next(new AppError(500, error.message));
+  } finally {
+    if (db) db.release();
   }
 };
 
