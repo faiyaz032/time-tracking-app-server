@@ -47,18 +47,22 @@ const createEntry = async (req, res, next) => {
  */
 const getEntries = async (req, res, next) => {
   const { id: userId } = req.user;
+  console.log('🚀 ~ file: entries.controller.js:51 ~ getEntries ~ userId:', userId);
 
   try {
     const db = await pool.getConnection();
 
-    const [result] = await db.query('SELECT * from entries WHERE userId = ?', [userId]);
-    console.log('🚀 ~ file: entries.controller.js:53 ~ getEntries ~ result:', result);
+    const [result] = await db.query('SELECT * from entries WHERE userId = ? ORDER BY id DESC', [
+      userId,
+    ]);
 
     res.status(200).json({
       status: 'success',
       message: 'All entries fetched successfully',
       data: result,
     });
+
+    db.release();
   } catch (error) {
     console.log(error);
     next(new AppError(500, error.message));

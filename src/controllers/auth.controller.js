@@ -12,6 +12,23 @@ const signJwt = require('../utils/signJwt');
  * @param {express.Response} res
  * @param {express.NextFunction} next
  */
+const isAuthenticated = async (req, res, next) => {
+  try {
+    if (req.user) {
+      return res.status(200).json({ status: 'success', message: 'User is authenticated' });
+    }
+  } catch (error) {
+    console.log(error);
+    next(new AppError(500, error.message));
+  }
+};
+
+/**
+ * This function handles all the users register logic
+ * @param {express.Request} req
+ * @param {express.Response} res
+ * @param {express.NextFunction} next
+ */
 const register = async (req, res, next) => {
   const { name, email, password } = req.body;
 
@@ -43,9 +60,8 @@ const register = async (req, res, next) => {
 
       //sign jwt cookie
       res.cookie('AUTH_COOKIE', `Bearer ${token}`, {
-        maxAge: 86400,
+        maxAge: 3600000 * 24,
         httpOnly: true,
-        secure: true,
       });
 
       return res.status(201).json({
@@ -96,13 +112,12 @@ const login = async (req, res, next) => {
     const token = signJwt(result[0].id, result[0].email);
 
     res.cookie('AUTH_COOKIE', `Bearer ${token}`, {
-      maxAge: 86400,
+      maxAge: 3600000 * 24,
       httpOnly: true,
-      secure: true,
     });
 
     //send response
-    res.status(200).json({
+    return res.status(200).json({
       status: 'success',
       message: 'User logged in successfully',
       data: {
@@ -116,4 +131,33 @@ const login = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login };
+/**
+ * This function destroy the cookie and logout
+ * @param {express.Request} req
+ * @param {express.Response} res
+ * @param {express.NextFunction} next
+ */
+const logout = async (req, res, next) => {
+  try {
+    if (req.cookies.AUTH_COOKIE) {
+      res.clearCookie('AUTH_COOKIE', {
+        httpOnly: true,
+      });
+
+      return res.status(200).json({
+        status: 'success',
+        message: 'Logout successfully',
+      });
+    } else {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'Noo cookies available to destroy',
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    next(new AppError(500, error.message));
+  }
+};
+
+module.exports = { register, login, isAuthenticated, logout };
