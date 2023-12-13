@@ -13,8 +13,6 @@ const isAuth = (req, res, next) => {
   //check if cookie exists
   const cookie = req.cookies.AUTH_COOKIE;
 
-  console.log('🚀 ~ file: isAuth.js:15 ~ isAuth ~ cookie:', cookie);
-
   if (!cookie) return next(new AppError(400, 'Please attach AUTH_COOKIE'));
 
   // split the authorization header to extract the token

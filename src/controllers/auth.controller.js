@@ -15,7 +15,13 @@ const signJwt = require('../utils/signJwt');
 const isAuthenticated = async (req, res, next) => {
   try {
     if (req.user) {
-      return res.status(200).json({ status: 'success', message: 'User is authenticated' });
+      return res
+        .status(200)
+        .json({
+          status: 'success',
+          message: 'User is authenticated',
+          data: { name: req.user.name },
+        });
     }
   } catch (error) {
     console.log(error);
@@ -58,7 +64,7 @@ const register = async (req, res, next) => {
 
     if (newUser.affectedRows > 0) {
       //sign token
-      const token = signJwt(newUser.insertId);
+      const token = signJwt(newUser.insertId, name, email);
 
       //sign jwt cookie
       res.cookie('AUTH_COOKIE', `Bearer ${token}`, {
@@ -115,7 +121,7 @@ const login = async (req, res, next) => {
     }
 
     //sign token
-    const token = signJwt(result[0].id, result[0].email);
+    const token = signJwt(result[0].id, result[0].email, result[0].name);
 
     res.cookie('AUTH_COOKIE', `Bearer ${token}`, {
       maxAge: 3600000 * 24,
